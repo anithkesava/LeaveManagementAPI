@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace RealTime_APIDev.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateInitialMigrationFile : Migration
+    public partial class CreateIntial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,9 +19,8 @@ namespace RealTime_APIDev.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     EmployeeName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ProjectName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TotalLeave = table.Column<int>(type: "int", nullable: false),
-                    LeaveTaken = table.Column<int>(type: "int", nullable: false),
-                    LeaveRemaining = table.Column<int>(type: "int", nullable: false)
+                    TotalLeave = table.Column<int>(type: "int", nullable: true),
+                    LeaveTaken = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {

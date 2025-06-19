@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Abstractions;
 using RealTime_APIDev.Entity;
+using RealTime_APIDev.Layer;
 namespace RealTime_APIDev.Main
 {
     public class Program
@@ -15,6 +16,7 @@ namespace RealTime_APIDev.Main
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnections"));
             });
+            builder.Services.AddScoped<IEmployeeService, EmployeeService>();
             var app = builder.Build();
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

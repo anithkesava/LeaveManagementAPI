@@ -12,8 +12,8 @@ using RealTime_APIDev.Entity;
 namespace RealTime_APIDev.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250619135508_CreateInitialMigrationFile")]
-    partial class CreateInitialMigrationFile
+    [Migration("20250619152344_CreateIntial")]
+    partial class CreateIntial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,17 +37,14 @@ namespace RealTime_APIDev.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("LeaveRemaining")
-                        .HasColumnType("int");
-
-                    b.Property<int>("LeaveTaken")
+                    b.Property<int?>("LeaveTaken")
                         .HasColumnType("int");
 
                     b.Property<string>("ProjectName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TotalLeave")
+                    b.Property<int?>("TotalLeave")
                         .HasColumnType("int");
 
                     b.HasKey("EmployeeID");

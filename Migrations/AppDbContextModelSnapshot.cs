@@ -34,17 +34,14 @@ namespace RealTime_APIDev.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("LeaveRemaining")
-                        .HasColumnType("int");
-
-                    b.Property<int>("LeaveTaken")
+                    b.Property<int?>("LeaveTaken")
                         .HasColumnType("int");
 
                     b.Property<string>("ProjectName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TotalLeave")
+                    b.Property<int?>("TotalLeave")
                         .HasColumnType("int");
 
                     b.HasKey("EmployeeID");
