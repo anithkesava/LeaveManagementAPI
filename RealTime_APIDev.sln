@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35825.156 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealTime_APIDev", "RealTime_APIDev.csproj", "{B410CB41-077B-4DD6-9705-DAF6B7020D71}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B410CB41-077B-4DD6-9705-DAF6B7020D71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B410CB41-077B-4DD6-9705-DAF6B7020D71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B410CB41-077B-4DD6-9705-DAF6B7020D71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B410CB41-077B-4DD6-9705-DAF6B7020D71}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2B60DD8B-2828-40FB-B867-3C6D899850BC}
+	EndGlobalSection
+EndGlobal
