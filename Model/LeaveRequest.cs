@@ -13,6 +13,7 @@ namespace RealTime_APIDev.Model
         public double TotalDays { get; set; }
         public string Reason { get; set; }
         public DateOnly AppliedDate { get; set; }
+
         public string? AdminAction { get; set; }
         public DateOnly? ActionTakenDate { get; set; }
     }

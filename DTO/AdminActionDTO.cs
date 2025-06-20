@@ -4,7 +4,7 @@
     {
         public int RequestID { get; set; }
 
-        public string AdminAction { get; set; }
+        public string? AdminAction { get; set; }
 
         public DateOnly? ActionTakenDate { get; set; }
     }
