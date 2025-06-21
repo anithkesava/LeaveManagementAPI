@@ -4,89 +4,63 @@ using Microsoft.EntityFrameworkCore;
 using RealTime_APIDev.DTO;
 using RealTime_APIDev.Entity;
 using RealTime_APIDev.Model;
-
 namespace RealTime_APIDev.Layer
 {
     public interface IEmployeeService
     {
+        bool ValidEmployee(EmployeeDTO employee);
         Task AddEmployeeDetails(EmployeeDTO employee);
-
         bool IsEmployeeNameAlreadyAdded(string name, string pname);
-
         bool IsEmployeeExists(int id);
-
         bool IsStartDateEndDateToday(DateOnly? startDate, DateOnly? endDate);
-
         bool IsStartDateEndDateAlreadyExists(LeaveRequestDTO leaveRequestDTO);
-
         Task ApplyEmployeeLeave(LeaveRequestDTO leaveRequestDTO);
-
         int? RemainingLeaveDays(int employeeID);
-
-        LeaveRequest GetLeaveRequestDetails(int RequestID);
-
+        LeaveRequest? GetLeaveRequestDetails(int RequestID);
         bool IsAdminRequiresAction(int id);
-
         List<int> GetLeaveRequestIDsRequiredAction();
-
         Task AdminAction(AdminActionDTO adminActionDTO);
-
+        bool IsAdminActionValid(string? adminAction);
+        List<LeaveRequest> GetLeaveRequestByFilters(LeaveRequestFilterDTO leaveRequestFilterDTO);
     }
-
     public class EmployeeService : IEmployeeService
     {
         private readonly AppDbContext _appContext;
-
         public EmployeeService(AppDbContext appContext)
         {
             this._appContext = appContext;
         }
-
+        public bool ValidEmployee(EmployeeDTO employee)
+        {
+            var employeeDetails = _appContext.Employees.ToList();
+            if (employeeDetails != null)
+            {
+                return employeeDetails.Any(x => x.EmployeeName == employee.EmployeeName && x.EmployeeRole == employee.EmployeeRole && x.ProjectName == employee.ProjectName);
+            }
+            return false;
+        }
         public bool IsEmployeeNameAlreadyAdded(string name, string pname)
         {
             var employeeDetails = _appContext.Employees.ToList();
             return employeeDetails.Exists(x => x.EmployeeName == name && x.ProjectName == pname);
         }
-
         public async Task AddEmployeeDetails(EmployeeDTO employee)
         {
             Employee emp = new Employee
             {
                 EmployeeName = employee.EmployeeName,
-                ProjectName = employee.ProjectName
+                ProjectName = employee.ProjectName,
+                EmployeeRole = employee.EmployeeRole
             };
-
             await _appContext.Employees.AddAsync(emp);
             await _appContext.SaveChangesAsync();
         }
-
-        public bool IsEmployeeExists(int id)
-        {
-            var employeeDetails = _appContext.Employees.FirstOrDefault(x => x.EmployeeID == id);
-
-            if (employeeDetails != null)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
+        public bool IsEmployeeExists(int id) => _appContext.Employees.Any(x => x.EmployeeID == id);
         public bool IsStartDateEndDateToday(DateOnly? startDate, DateOnly? endDate)
         {
             DateOnly currentDate = DateOnly.FromDateTime(DateTime.Now);
-            if (startDate == currentDate && endDate == currentDate)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return (startDate == currentDate && endDate == currentDate) ? true : false;
         }
-
         public bool IsStartDateEndDateAlreadyExists(LeaveRequestDTO leaveRequestDTO)
         {
             List<DateOnly?> leaveDates = new List<DateOnly?>();
@@ -103,14 +77,12 @@ namespace RealTime_APIDev.Layer
             }
             return false;
         }
-
         public async Task ApplyEmployeeLeave(LeaveRequestDTO leaveRequestDTO)
         {
             if (leaveRequestDTO.EmployeeID > 0 && leaveRequestDTO.Reason != "string" &&
                 leaveRequestDTO.StartDate <= leaveRequestDTO.Enddate)
             {
                 /*our goal is to insert all the non nullable values from the LeaveRequest*/
-
                 var employeeDetails = _appContext.Employees.FirstOrDefault(x => x.EmployeeID == leaveRequestDTO.EmployeeID);
                 if (employeeDetails != null)
                 {
@@ -124,7 +96,6 @@ namespace RealTime_APIDev.Layer
                         Reason = leaveRequestDTO.Reason,
                         AppliedDate = DateOnly.FromDateTime(DateTime.Now)
                     };
-
                     employeeDetails.TotalLeave = 20;
                     if (employeeDetails.LeaveTaken == null)
                     {
@@ -132,47 +103,25 @@ namespace RealTime_APIDev.Layer
                     }
                     employeeDetails.LeaveTaken += (int)leaveRequest.TotalDays;
                     employeeDetails.LeaveRemaining = employeeDetails.TotalLeave - employeeDetails.LeaveTaken;
-
                     await _appContext.LeaveRequests.AddAsync(leaveRequest);
                     await _appContext.SaveChangesAsync();
                 }
             }
         }
-
         public int? RemainingLeaveDays(int employeeID)
         {
             var employee = _appContext.Employees.FirstOrDefault(x => x.EmployeeID == employeeID);
             return employee?.LeaveRemaining;
         }
-
-        public LeaveRequest GetLeaveRequestDetails(int RequestID)
+        public LeaveRequest? GetLeaveRequestDetails(int RequestID)
         {
-            var leaveRequestDetails = _appContext.LeaveRequests.FirstOrDefault(x => x.RequestID == RequestID);
-            if (leaveRequestDetails != null)
-            {
-                return leaveRequestDetails;
-            }
-            else
-            {
-                return new LeaveRequest();
-            }
+            return _appContext.LeaveRequests.FirstOrDefault(x => x.RequestID == RequestID);
         }
-
         public bool IsAdminRequiresAction(int id)
         {
             var leaveDetails = _appContext.LeaveRequests.FirstOrDefault(x => x.RequestID == id);
-            if (leaveDetails != null)
-            {
-                if (leaveDetails.AdminAction != "string")
-                {
-                    return true;
-                }
-                return false;
-            }
-            return false;
-
+            return (leaveDetails?.AdminAction != "string") ? true : false;
         }
-
         public List<int> GetLeaveRequestIDsRequiredAction()
         {
             List<int> RequestIDs = new List<int>();
@@ -188,7 +137,7 @@ namespace RealTime_APIDev.Layer
             }
             return new List<int>();
         }
-
+        public bool IsAdminActionValid(string? adminAction) => adminAction == "approve" || adminAction == "reject";
         public async Task AdminAction(AdminActionDTO adminActionDTO)
         {
             var leaveRequest = _appContext.LeaveRequests.FirstOrDefault(x => x.RequestID == adminActionDTO.RequestID);
@@ -196,8 +145,31 @@ namespace RealTime_APIDev.Layer
             {
                 leaveRequest.AdminAction = adminActionDTO.AdminAction;
                 leaveRequest.ActionTakenDate = DateOnly.FromDateTime(DateTime.Now);
-
                 await _appContext.SaveChangesAsync();
+            }
+        }
+        public List<LeaveRequest> GetLeaveRequestByFilters(LeaveRequestFilterDTO leaveRequestFilterDTO)
+        {
+            var leaveRequestDetails = _appContext.LeaveRequests.AsQueryable();
+            if (leaveRequestFilterDTO != null)
+            {
+                if (leaveRequestFilterDTO.Month.HasValue)
+                {
+                    leaveRequestDetails = leaveRequestDetails.Where(x => x.StartDate.HasValue && x.StartDate.Value.Month == leaveRequestFilterDTO.Month.Value);
+                }
+                if (leaveRequestFilterDTO.Year.HasValue)
+                {
+                    leaveRequestDetails = leaveRequestDetails.Where(x => x.StartDate.HasValue && x.StartDate.Value.Year == leaveRequestFilterDTO.Year.Value);
+                }
+                if (!string.IsNullOrWhiteSpace(leaveRequestFilterDTO.AdminStatus))
+                {
+                    leaveRequestDetails = leaveRequestDetails.Where(x => x.AdminAction == leaveRequestFilterDTO.AdminStatus);
+                }
+                return leaveRequestDetails.ToList();
+            }
+            else
+            {
+                return new List<LeaveRequest>();
             }
         }
     }

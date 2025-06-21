@@ -5,5 +5,7 @@
         public string EmployeeName { get; set; }
 
         public string ProjectName { get; set; }
+
+        public string EmployeeRole { get; set; }
     }
 }

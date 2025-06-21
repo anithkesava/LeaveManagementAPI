@@ -9,6 +9,8 @@ namespace RealTime_APIDev.Model
         [Required]
         public string EmployeeName { get; set; }
         [Required]
+        public string EmployeeRole { get; set; }
+
         public string ProjectName { get; set; }
 
         public int? TotalLeave { get; set; }
